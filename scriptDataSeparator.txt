@@ -1,0 +1,40 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from google.colab import files
+
+# Upload the file within the same code block
+uploaded = files.upload()
+
+# Access uploaded file content and create a BytesIO object
+import io
+file_content = uploaded['diabetic_data.csv']
+file_stream = io.BytesIO(file_content)
+
+# Carregar o ficheiro CSV
+df = pd.read_csv(file_stream)
+
+# Misturar os dados
+df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+
+# Dividir 20% dos dados para treino
+df_train, df_remaining = train_test_split(df, test_size=0.8, random_state=42)
+
+# Dividir os dados restantes em 30%, 40%, 10% e 20% para testes
+df_test_30, df_temp = train_test_split(df_remaining, test_size=0.7, random_state=42)  # 30% para teste
+df_test_40, df_temp = train_test_split(df_temp, test_size=0.6, random_state=42)       # 40% para teste
+df_test_10, df_test_20 = train_test_split(df_temp, test_size=0.67, random_state=42)   # 10% e 20% para teste
+
+# Guardar os ficheiros CSV finais
+df_train.to_csv('train_20.csv', index=False)
+df_test_30.to_csv('test_30.csv', index=False)
+df_test_40.to_csv('test_40.csv', index=False)
+df_test_10.to_csv('test_10.csv', index=False)
+df_test_20.to_csv('test_20.csv', index=False)
+
+print("Divisão concluída e ficheiros gravados.")
+
+files.download('train_20.csv')
+files.download('test_30.csv')
+files.download('test_40.csv')
+files.download('test_10.csv')
+files.download('test_20.csv')
